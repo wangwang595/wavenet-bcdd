@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.TPumptruckControlMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_PT_ID, N_ALARM_ID, S_AREANAME, S_PERNAME, N_DM_STATE, N_RW_STATE, N_P_X, N_P_Y, N_S_X, N_S_Y, S_PS, N_GPS, S_TAST_ID, N_PB_X, N_PB_Y, N_SB_X, N_SB_Y, S_PZ, T_UPDATETIME
+    </sql>
+
+    <select id="getTPumptruckControlById" resultType="com.wavenet.maintenance.web.vo.TPumptruckControlQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_PUMPTRUCK_CONTROL where id = #{id}
+    </select>
+
+    <select id="getTPumptruckControlPageList" resultType="com.wavenet.maintenance.web.vo.TPumptruckControlQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_PUMPTRUCK_CONTROL
+    </select>
+
+<!--    查询集结待命-->
+    <select id="getTPumpInfo" resultType="java.lang.Integer">
+select count(1) from t_pumptruck
+--        select count(1)   as JJDM from t_pumptruck_control  a
+-- inner join t_pumptruck  b on a.s_pt_id=b.s_pt_id
+-- where a.N_RW_STATE=1 and a.N_DM_STATE=1 and b.S_ZDBZ='否'
+    </select>
+
+    <!--    任务执行 -->
+    <select id="getrenwujizhing" resultType="java.lang.Integer">
+         select count(1) as renwu from t_pumptruck_control where N_RW_STATE=2 and N_DM_STATE=1
+    </select>
+
+    <!--    驻点保障 -->
+    <select id="getzhudianbaozhang" resultType="java.lang.Integer">
+         select count(1) as ptcount from t_pumptruck_control a
+    inner join t_pumptruck b on a.s_pt_id=b.s_pt_id
+    where a.N_RW_STATE=1 and a.N_DM_STATE=1 and b.S_ZDBZ='是'
+    </select>
+    <!--    任务已完成 -->
+    <select id="getkongxian" resultType="java.lang.Integer">
+select count(1) as ptcount from t_pumptruck_control where N_RW_STATE=3 and N_DM_STATE=1
+    </select>
+
+    <!--    市级查询集结待命-->
+    <select id="getshijidaiming" resultType="java.lang.Integer">
+       select count(1)   as JJDM from t_pumptruck_control  a
+inner join t_pumptruck  b on a.s_pt_id=b.s_pt_id
+where a.N_RW_STATE=1 and a.N_DM_STATE=1 and b.S_ZDBZ='否'
+        <if test="city != null and city != ''" >
+             and  b.S_QX like #{city}
+        </if>
+    </select>
+
+    <!--    市级任务执行 -->
+    <select id="getshijirenwujizhing" resultType="java.lang.Integer">
+select count(1) as ptcount from t_pumptruck_control a inner join  t_pumptruck  b on a.s_pt_id=b.s_pt_id  where N_RW_STATE=2 and N_DM_STATE=1
+ <if test="city != null and city != ''" >
+     and  b.S_QX like #{city}
+    </if>   </select>
+
+    <!--    市级驻点保障 -->
+    <select id="getshijizhudianbaozhang" resultType="java.lang.Integer">
+select count(1) as ptcount from t_pumptruck_control a
+inner join t_pumptruck b on a.s_pt_id=b.s_pt_id
+where a.N_RW_STATE=1 and a.N_DM_STATE=1 and b.S_ZDBZ='是'
+        <if test="city != null and city != ''" >
+            and  b.S_QX like #{city}
+        </if>    </select>
+    <!--    市级空闲泵车 -->
+    <select id="getshijikongxian" resultType="java.lang.Integer">
+ select count(1) as ptcount from t_pumptruck_control a inner join  t_pumptruck  b on a.s_pt_id=b.s_pt_id  where N_RW_STATE=0 and N_DM_STATE=0
+        <if test="city != null and city != ''" >
+            and  b.S_QX like #{city}
+        </if>
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.PatrolInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        PATROL_INFO.patrol_code, PATROL_INFO.road_code, PATROL_INFO.road_name, PATROL_INFO.road_section_code, PATROL_INFO.road_section_start,
+        PATROL_INFO.road_section_end, PATROL_INFO.date_start, PATROL_INFO.date_end,
+         PATROL_INFO.mileage, PATROL_INFO.type, PATROL_INFO.person_code, PATROL_INFO.person_name, PATROL_INFO.company, PATROL_INFO.town, PATROL_INFO.state
+    </sql>
+
+    <select id="getPatrolInfoById" resultType="com.wavenet.maintenance.web.vo.PatrolInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from PATROL_INFO where PATROL_CODE = #{id}
+    </select>
+
+    <select id="getPatrolInfoPageList" resultType="com.wavenet.maintenance.web.vo.PatrolInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from PATROL_INFO
+    </select>
+
+    <select id="selectPatrolInfo" resultType="com.wavenet.maintenance.web.vo.PatrolInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from PATROL_INFO
+        left join EVENT_INFO   on PATROL_INFO.PA
+    </select>
+</mapper>

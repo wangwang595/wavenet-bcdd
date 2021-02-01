@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.SyscommandoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, QXFW, DWMC, CZ, GSDH, FZR, FZRSJ, ZW, LXR, LXDH, JJDD, GSJS, ZT, REMARK, CREATETIME, CREATEPERSON, UPDATETIME, UPDATEPERSON, DISTID, GRADE, N_ISSH, S_SHR, T_SHSJ, S_X, S_Y
+    </sql>
+
+    <select id="getSyscommandoById" resultType="com.wavenet.maintenance.web.vo.SyscommandoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from SYSCOMMANDO where id = #{id}
+    </select>
+
+    <select id="getSyscommandoPageList" resultType="com.wavenet.maintenance.web.vo.SyscommandoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from SYSCOMMANDO
+    </select>
+
+
+    <select id="getrenwuzhixing" resultType="java.lang.Integer">
+        select count(1)  RWZX from syscommando where   ID in (select s_syscommandoid  as ptcount from t_pumptruck_control a
+    inner join t_pumptruck  b on a.s_pt_id=b.s_pt_id  where N_RW_STATE=2  and N_DM_STATE=1  )
+    </select>
+
+    <select id="getzhudianbaozhang" resultType="java.lang.Integer">
+      select count(1)  ZDBZ from syscommando where   ID in (select s_syscommandoid  as ptcount  from t_pumptruck_control  a
+    inner join t_pumptruck  b on a.s_pt_id=b.s_pt_id
+    where a.N_RW_STATE=1 and a.N_DM_STATE=1 and b.S_ZDBZ='是')
+    </select>
+
+    <select id="getrenwuwancheng" resultType="java.lang.Integer">
+       select count(1)  RWZX from syscommando where   ID in (select s_syscommandoid  as ptcount from t_pumptruck_control a
+    inner join t_pumptruck  b on a.s_pt_id=b.s_pt_id  where N_RW_STATE=3  and N_DM_STATE=1  )
+    </select>
+
+    <select id="zongshu" resultType="java.lang.Integer">
+   select count(1) from syscommando
+    </select>
+
+
+</mapper>

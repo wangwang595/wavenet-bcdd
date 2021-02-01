@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.EventInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        event_code, patrol_code, event_type_code, event_type, event_type_large, event_type_small, event_desc, address, x, y, person_code, person_name, company, town, report_date, road_code, road_name, road_section_code, road_section_start, road_section_end, attachment, event_state, delete_state
+    </sql>
+
+    <select id="getEventInfoById" resultType="com.wavenet.maintenance.web.vo.EventInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_INFO where EVENT_CODE = #{id}
+    </select>
+
+    <select id="getEventInfoPageList"  resultType="com.wavenet.maintenance.web.vo.EventInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_INFO where 1=1
+    <if test="eventInfoQueryParam.time != null and eventInfoQueryParam.time != ''">
+        and report_date like #{eventInfoQueryParam.time}+'%'
+    </if>
+    <if test="eventInfoQueryParam.type != null and eventInfoQueryParam.type !=''">
+        and event_type = #{eventInfoQueryParam.type}
+    </if>
+    <if test="eventInfoQueryParam.typeLarge != null and eventInfoQueryParam.typeLarge != ''">
+        and event_type_large = #{eventInfoQueryParam.typeLarge}
+    </if>
+    <if test="eventInfoQueryParam.typeSmall != null and eventInfoQueryParam.typeSmall !=''">
+        and event_type_small = #{eventInfoQueryParam.typeSmall}
+    </if>
+    <if test="eventInfoQueryParam.personCode != null and eventInfoQueryParam.personCode != ''">
+        and person_code = #{eventInfoQueryParam.personCode}
+    </if>
+    </select>
+    <!--根据路段编号查询-->
+    <select id="selectInfoByCode" parameterType="java.lang.String" resultType="com.wavenet.maintenance.web.vo.EventInfoQueryVo">
+        select * from EVENT_INFO where event_code
+        in (select tbb.event_code from (select * from EVENT_DISPATCH tba where road_code=#{code} ) tba
+        left join EVENT_DISPATCH_REL tbb
+        on tba.dispatch_code=tbb.dispatch_code)
+    </select>
+    <!--根据路段名查询DispatchCode-->
+    <select id="selectDispatchCode" parameterType="java.lang.String" resultType="com.wavenet.maintenance.dao.entity.EventDispatchRel">
+        select tbb.* from (select * from EVENT_DISPATCH tba where road_code=#{code} ) tba
+        left join EVENT_DISPATCH_REL tbb
+        on tba.dispatch_code=tbb.dispatch_code
+    </select>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.EventDisposalWorkloadMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        workload_code, disposal_code, event_type, event_type_large, event_type_small, plan_value, unit, describe, process, auditor
+    </sql>
+
+    <select id="getEventDisposalWorkloadById" resultType="com.wavenet.maintenance.web.vo.EventDisposalWorkloadQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPOSAL_WORKLOAD where WORKLOAD_CODE = #{id}
+    </select>
+
+    <select id="getEventDisposalWorkloadPageList" resultType="com.wavenet.maintenance.web.vo.EventDisposalWorkloadQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPOSAL_WORKLOAD where 1=1
+        <if test="eventDisposalWorkloadQueryParam.disposalCode != null and eventDisposalWorkloadQueryParam.disposalCode != ''">
+            and disposal_code = #{eventDisposalWorkloadQueryParam.disposalCode}
+        </if>
+    </select>
+
+</mapper>

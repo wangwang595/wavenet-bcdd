@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.TPumptruckMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PT_ID, S_SYSCOMMANDOID, S_PT_NAME, S_QX, S_PZ, S_PT_FLOW, S_PT_LIFT, S_MANAGEUNITID, S_ADD, S_PT_CONTACTS, S_PT_CONTACTPHONE, S_PT_AREA, N_PT_CLASS, S_PT_MODEL, S_PT_TYPE, T_PT_SERVICETIME, N_PT_ASSESS, S_PT_CAPTAIN, N_PT_PERCOUNT, S_PT_CHARGE, S_PT_CHARGEPHONE, S_ISPIC, S_BZ, T_CREATTIME, S_CREATPER, T_EDITTIME, S_EDITPER, S_SP, S_SPBH, S_SYFW, N_ISSH, S_SHR, T_SHSJ, S_X, S_Y, S_ZDBZ, S_ZDBZ_ADDRESS
+    </sql>
+
+    <select id="getTPumptruckById" resultType="com.wavenet.maintenance.web.vo.TPumptruckQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_PUMPTRUCK where id = #{id}
+    </select>
+
+    <select id="getTPumptruckPageList" resultType="com.wavenet.maintenance.web.vo.TPumptruckQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_PUMPTRUCK
+    </select>
+
+    <select id="getshijikongxian" resultType="String">
+    select distinct S_QX from t_pumptruck
+    </select>
+<!--     获取泵车全部信息-->
+    <select id="getPumptruckAllInfo" parameterType="java.lang.String" resultType="com.wavenet.maintenance.web.vo.PumptruckAllInfoVo">
+        select tba.s_pt_id,tba.s_syscommandoid,tba.s_pt_name,tbd.dwmc,tba.s_qx,tba.s_pz,tba.s_pt_flow,tba.s_pt_lift,tba.s_add,tba.s_pt_contacts,tba.s_pt_contactphone,
+        tba.n_pt_class,tba.s_pt_area,tba.s_bz,tba.s_sp,tba.s_spbh,tba.s_x,tba.s_y,tba.s_zdbz,tbb.n_dm_state,tbb.n_rw_state,tbb.n_p_x,tbb.n_p_y,tbb.n_gps,tbc.FULLPATH,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行抢险'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE, case when  S_SPBH is null then '否' when S_SPBH like '%2112%' then '否' else '是' end  video    from  t_pumptruck tba left join
+        t_pumptruck_control tbb on tba.s_pt_id=tbb.s_pt_id
+        left join   (select * from (
+        select  WBID,PATH as FULLpath,
+        row_number() OVER(PARTITION BY WBID ORDER BY ID desc) as row_flg
+        from T_FileUploader t where sourcetype=4 ) where row_flg=1) tbc
+        on tba.s_pt_id=tbc.WBID  left join SYSCOMMANDO tbd
+        on tba.s_syscommandoid=tbd.id
+        where  1=1
+        <if test="sPtId != null and sPtId != ''" >
+            and tba.s_pt_id = #{sPtId}
+        </if>
+    </select>
+
+    <select id="historicalTrack" resultType="com.wavenet.maintenance.web.vo.TPumptruckControlhisQueryVos">
+        SELECT S_TAST_ID,listagg(N_P_X,',')AS N_P_X , listagg(N_P_Y,',')AS N_P_Y
+        ,MAX(T_UPDATETIME) as ENDTIME ,min(T_UPDATETIME) as STARTTIME,TBA.S_NAME
+        FROM "T_PUMPTRUCK_CONTROLHIS" t,
+        (select tbb.s_id,tba.s_name from T_ZAIQING_INFO tba,t_dispatch tbb
+        where
+        1=1
+          and tba.s_id=tbb.s_zaiqing_id
+        <if test="name != null and name != ''" >
+            and tba.S_NAME  like '%'||#{name}||'%'
+        </if>
+        and tbb.s_pt_id=#{sPtId}) tba
+        WHERE S_PT_ID=#{sPtId}
+        and t.S_TAST_ID = tba.S_ID
+        <if test="startTime != null and startTime != ''" >
+            and to_char(t.T_UPDATETIME,'yyyy-mm-dd hh24:mi:ss')   &gt; #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''" >
+            and to_char(t.T_UPDATETIME,'yyyy-mm-dd hh24:mi:ss')  &lt; #{endTime}
+        </if>
+        GROUP BY S_TAST_ID , TBA.S_NAME
+
+
+
+
+
+
+    </select>
+    <select id="pumpTruckTrajectory" resultType="com.wavenet.maintenance.web.vo.TPumptruckControlhisQueryVo">
+        SELECT * from  T_PUMPTRUCK_CONTROLHIS WHERE S_TAST_ID =#{id} ORDER BY S_PT_ID
+
+
+
+    </select>
+    <select id="riskManagement" resultType="com.wavenet.maintenance.dao.entity.TZaiqingInfo">
+
+        select* from T_ZAIQING_INFO tba
+        where
+        <if test="city!=null and city !=''">
+            and tba.sqx like '%||{city}||%'
+        </if>
+        <if test="dispatch!=null and dispatch=1">
+            //p
+
+        </if>
+
+
+
+
+
+
+    </select>
+    <select id="nowlTrack" resultType="com.wavenet.maintenance.web.vo.TPumptruckControlhisQueryVos">
+
+        SELECT S_TAST_ID,listagg(N_P_X,',')AS N_P_X , listagg(N_P_Y,',')AS N_P_Y
+        ,MAX(T_UPDATETIME) as ENDTIME ,min(T_UPDATETIME) as STARTTIME,TBA.S_NAME
+        FROM "T_PUMPTRUCK_CONTROLHIS" t,
+        (select tbb.s_id,tba.s_name from T_ZAIQING_INFO tba,t_dispatch tbb
+        where
+        1=1
+        and tba.s_id=tbb.s_zaiqing_id
+       and  tba.S_ID=#{sId}
+        and tbb.s_pt_id=#{sPtId}) tba
+        WHERE S_PT_ID=#{sPtId}
+        and t.S_TAST_ID = tba.S_ID
+        <if test="startTime != null and startTime != ''" >
+            and to_char(t.T_UPDATETIME,'yyyy-mm-dd hh24:mi:ss')   &gt; #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''" >
+            and to_char(t.T_UPDATETIME,'yyyy-mm-dd hh24:mi:ss')  &lt; #{endTime}
+        </if>
+        GROUP BY S_TAST_ID , TBA.S_NAME
+
+
+
+
+    </select>
+</mapper>

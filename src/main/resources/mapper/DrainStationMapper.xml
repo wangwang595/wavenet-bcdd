@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.DrainStationMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ST_STATIONID, ST_STATIONNAME, ST_OLDID, ST_TYPENAME, ST_SOURCE, XX, YY, S_Dist
+    </sql>
+
+    <select id="getDrainStationById" resultType="com.wavenet.maintenance.web.vo.DrainStationQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from Drain_Station where id = #{id}
+    </select>
+
+    <select id="getDrainStationPageList" resultType="com.wavenet.maintenance.web.vo.DrainStationQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from Drain_Station
+    </select>
+
+    <!--路段下拉框查询-->
+    <select id="selectDrainById" parameterType="java.lang.String" resultType="com.wavenet.maintenance.dao.entity.DrainStation">
+        select * from Drain_Station where   1=1
+        <if test="stStationid != null and stStationid != ''" >
+            and ST_STATIONID = #{stStationid}
+        </if>
+
+
+    </select>
+</mapper>

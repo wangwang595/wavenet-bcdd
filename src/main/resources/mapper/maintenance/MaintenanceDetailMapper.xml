@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.MaintenanceDetailMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detail_code, plan_code, road_code, road_name, road_section_code, road_section_start, road_section_end, type, year, month, curing_state, company, pipe_total, pipe_main, pipe_branch,
+        manhole, catch_basin,plans,project_team,town,source,Enclosure,pipe_grade
+    </sql>
+
+    <select id="getMaintenanceDetailById" resultType="com.wavenet.maintenance.web.vo.MaintenanceDetailQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from MAINTENANCE_DETAIL where detail_code = #{id}
+    </select>
+
+    <select id="getMaintenanceDetailPageList" parameterType="map" resultType="com.wavenet.maintenance.web.vo.MaintenanceDetailQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from MAINTENANCE_DETAIL
+        where 1=1
+        <if test="param.roadName!=null and  param.roadName!=''">
+            and road_name=#{param.roadName}
+        </if>
+        <if test="param.year!=null and param.year!=''">
+            and year=#{param.year}
+        </if>
+        <if test="param.month!=null and param.month!=''">
+            and month= #{param.month}
+        </if>
+        <if test="param.curingState!=null and param.curingState!=''">
+            and  curing_state=#{param.curingState}
+        </if>
+        <if test="param.plans!=null and param.plans!=''">
+            and plans = #{param.plans}
+        </if>
+        <if test="param.projectTeam!=null and param.projectTeam!=''">
+            and project_team = #{param.projectTeam}
+        </if>
+        <if test="param.type!=null and param.type!=''">
+            and type = #{param.type}
+        </if>
+        <if test="param.roadSectionCode!=null and param.roadSectionCode!=''">
+            and road_section_code = #{param.roadSectionCode}
+        </if>
+    </select>
+
+    <select id="getMaintenanceDetail" parameterType="map" resultType="com.wavenet.maintenance.web.vo.MaintenanceDetailQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from MAINTENANCE_DETAIL
+        where
+        '1'='1'
+        <if test="param.roadName!=null and  param.roadName!=''">
+            and road_name=#{param.roadName}
+        </if>
+        <if test="param.year!=null and param.year!=''">
+            and year=#{param.year}
+        </if>
+        <if test="param.month!=null and param.month!=''">
+            and month= #{param.month}
+        </if>
+        <if test="param.curingState!=null and param.curingState!=''">
+            and  curing_state=#{param.curingState}
+        </if>
+        <if test="param.type!=null and param.type!=''">
+            and  type=#{param.type}
+        </if>
+        <if test="param.roadSectionCode!=null and param.roadSectionCode!=''">
+            and  road_section_code=#{param.roadSectionCode}
+        </if>
+
+    </select>
+
+</mapper>

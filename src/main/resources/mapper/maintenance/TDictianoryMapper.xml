@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.TDictianoryMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        N_ID, S_CD_KEY, S_CD_VALUE, S_BZ, S_TYPE
+    </sql>
+
+    <select id="getTDictianoryById" resultType="com.wavenet.maintenance.web.vo.TDictianoryQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_DICTIANORY where id = #{id}
+    </select>
+
+    <select id="getTDictianoryPageList" resultType="com.wavenet.maintenance.web.vo.TDictianoryQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_DICTIANORY
+    </select>
+    <select id="getCityInfo" resultType="java.lang.String">
+
+        select  S_CD_VALUE  from t_dictianory   where  s_type = #{stype} ORDER BY S_CD_KEY
+    </select>
+
+    <select id="gerPumptrukType" resultType="java.lang.String">
+
+        select  S_CD_VALUE  from t_dictianory   where  s_type = #{stype} ORDER BY S_CD_KEY
+    </select>
+
+</mapper>

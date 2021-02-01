@@ -1,0 +1,62 @@
+spring-boot-plus:
+  # 是否启用ansi控制台输出有颜色的字体，local环境建议开启，服务器环境设置为false
+  enable-ansi: true
+
+  # 拦截器配置
+  interceptor-config:
+    resource-config:
+      include-path: ${spring-boot-plus.resource-access-patterns}
+
+  # 文件上传下载配置
+  upload-path: /opt/upload/
+  # 资源访问路径
+  resource-access-path: /resource/
+  # 资源访问路径匹配：/resource/**
+  resource-access-patterns: ${spring-boot-plus.resource-access-path}**
+  # 资源访问全路径前缀：http://localhost:8888/resource/
+  resource-access-url: http://localhost:${server.port}${server.servlet.context-path}${spring-boot-plus.resource-access-path}
+
+server:
+  port: 9012
+  servlet:
+    context-path: /
+spring:
+  datasource:
+    dynamic:
+      primary: application
+      datasource:
+        application:
+          username: PSDD
+          password: Wavenet200204
+          driver-class-name: oracle.jdbc.driver.OracleDriver
+          url: jdbc:oracle:thin:@//10.0.5.226:1521/orcl
+#      application:
+#        username: PumpDD_Wavenet
+#        password: Wavenet_PumpDD2020
+#        driver-class-name: oracle.jdbc.driver.OracleDriver
+#        url: jdbc:oracle:thin:@//31.16.27.16:1521/pstest
+#        permission1:
+#          username: root
+#          password: 1qaz@wsx
+#          driver-class-name: com.mysql.jdbc.Driver
+#          url: jdbc:mysql://172.18.0.86:3306/FEIDONG2020
+
+  # Redis配置
+#  redis:
+#    database: 0
+#    host: 47.100.60.161
+#    password:
+#    port: 6379
+
+
+# logback.xml中有详细的日志配置
+logging:
+  config: classpath:config/logback.xml
+  #  方便Spring Boot Admin页面上实时查看日志
+  file:
+    path: logs/spring-boot-plus.log
+
+# 打印SQL语句和结果集，本地开发环境可开启，线上注释掉
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

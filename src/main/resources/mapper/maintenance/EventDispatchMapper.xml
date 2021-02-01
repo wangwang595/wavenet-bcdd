@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.EventDispatchMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        dispatch_code, dispatcher_code, dispatcher_name, dispatcher_date, dispatcher_desc, recipient_code, recipient_name, town, company, type,
+        road_code, road_name, road_section_code, road_section_start, road_section_end, DISPATCH_STATE
+    </sql>
+    <sql id="Base_List">
+        disposal_code,dispatch_code,solver_code,solver_name,town,company,
+        solve_start,solve_end,solve_desc,att_before,att_ongoing,att_after,
+        road_code,road_name,road_section_code,road_section_start,road_section_end
+    </sql>
+
+
+    <select id="getEventDispatchById" resultType="com.wavenet.maintenance.web.vo.EventDispatchQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPATCH where DISPATCH_CODE = #{id}
+    </select>
+    <!--查询养护列表-->
+    <select id="getEventDispatchPageList" resultType="com.wavenet.maintenance.web.vo.EventDisposalQueryVo">
+        select
+        <include refid="Base_List"/>
+        from EVENT_DISPOSAL
+        where 1=1
+        <if test="eventDispatchQueryParam.dispatcherDate != null and eventDispatchQueryParam.dispatcherDate != ''">
+        and solve_start like #{eventDispatchQueryParam.dispatcherDate}+'%'
+        </if>
+        <if test="eventDispatchQueryParam.dispatcherState != null and eventDispatchQueryParam.dispatcherState != ''">
+        and disposal_state = #{eventDispatchQueryParam.dispatcherState}
+        </if>
+        <if test="eventDispatchQueryParam.recipientCode != null and eventDispatchQueryParam.recipientCode != ''">
+        and SOLVER_CODE = #{eventDispatchQueryParam.recipientCode}
+        </if>
+    </select>
+
+    <select id="getDispatchById" resultType="com.wavenet.maintenance.web.vo.EventDispatchYhInfoVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPATCH where DISPATCH_CODE = #{id}
+    </select>
+    <!--养护详情病害查询-->
+    <select id="selectInfoByCode" parameterType="java.lang.String" resultType="com.wavenet.maintenance.web.vo.EventInfoQueryVo">
+        select * from EVENT_INFO where event_code
+        in (select tbb.event_code from (select * from EVENT_DISPATCH tba where dispatch_code=#{code} ) tba
+        left join EVENT_DISPATCH_REL tbb
+        on tba.dispatch_code=tbb.dispatch_code)
+    </select>
+    <!--养护详情主体查询-->
+    <select id="selectDispatchInfo" parameterType="java.lang.String" resultType="com.wavenet.maintenance.web.vo.EventDispatchYhInfoVo">
+        select * from EVENT_DISPOSAL
+        where disposal_code=#{code}
+    </select>
+    <select id="selectWorkLoad" parameterType="java.lang.String" resultType="com.wavenet.maintenance.web.vo.EventDisposalWorkloadQueryVo">
+        select * from EVENT_DISPOSAL_WORKLOAD where disposal_code=#{disposalCode}
+    </select>
+    
+    <select id="selectDispatList" parameterType="java.lang.String" resultType="com.wavenet.maintenance.dao.entity.EventDispatch">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPATCH where 1=1
+        <if test="town != ''and town != null ">
+            and town = #{town}
+        </if>
+    </select>
+
+</mapper>

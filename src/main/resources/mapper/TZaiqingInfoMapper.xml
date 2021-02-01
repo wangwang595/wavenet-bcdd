@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.TZaiqingInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_DEPTID, S_ADD, T_PUBLISH_TIME, S_PUBLISHER, N_SOURCE, N_S_X, N_S_Y, N_CANCEL, N_PAIDAN, N_ZHIYUAN, S_BZ, N_ISCLOSE, S_NO, S_NAME, N_VALUE, S_TYPE, N_PB_X, N_PB_Y, S_CANCELPER, T_CANCELTIME, S_LXR, S_LXDH, N_COMPLETE
+    </sql>
+
+    <select id="getTZaiqingInfoById" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_ZAIQING_INFO where id = #{id}
+    </select>
+
+    <select id="getTZaiqingInfoPageList" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_ZAIQING_INFO
+    </select>
+
+    <update id="closeById" parameterType="String" >
+        update T_ZAIQING_INFO set n_cancel=1 where n_cancel=0 and S_ID=#{id}
+    </update>
+
+    <update id="updataBysId" parameterType="String">
+        update t_zaiqing_info  set n_paidan=1  where s_id=#{sId}
+    </update>
+
+    <select id="getNumberById" resultType="java.lang.Integer">
+        select count(1) from t_dispatch  where S_ZAIQING_ID=#{id}
+    </select>
+
+    <select id="getAllInfo" resultType="com.wavenet.maintenance.web.vo.TZaiqingTpQueryVo">
+
+        select  tba.s_pt_id,tba.s_pz,tba.s_pt_contacts,tba.s_pt_contactphone,tbd.dwmc,tba.s_pt_flow,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd
+        where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        <if test="city != null and city != ''" >
+            and  tba.s_qx= #{city}
+        </if>
+    </select>
+
+
+
+
+    <select id="getAggregation" resultType="com.wavenet.maintenance.web.vo.TZaiqingTpQueryVo">
+
+        select  tba.s_pt_id,tba.s_pz,tba.s_pt_contacts,tba.s_pt_contactphone,tbd.dwmc,tba.s_pt_flow,case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd
+        where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and  tbb.N_RW_STATE=1 and   tbb.N_DM_STATE=1 and tba.S_ZDBZ='否'
+        <if test="city != null and city != ''" >
+            and  tba.s_qx= #{city}
+        </if>
+
+    </select>
+
+    <select id="getGuarantee" resultType="com.wavenet.maintenance.web.vo.TZaiqingTpQueryVo">
+
+        select  tba.s_pt_id,tba.s_pz,tba.s_pt_contacts,tba.s_pt_contactphone,tbd.dwmc,tba.s_pt_flow,case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd
+        where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'
+        <if test="city != null and city != ''" >
+            and  tba.s_qx= #{city}
+        </if>
+
+    </select>
+
+    <select id="getImplement" resultType="com.wavenet.maintenance.web.vo.TZaiqingTpQueryVo">
+
+        select  tba.s_pt_id,tba.s_pz,tba.s_pt_contacts,tba.s_pt_contactphone,tbd.dwmc,tba.s_pt_flow,case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE
+        from  t_pumptruck tba,
+    t_pumptruck_control tbb,syscommando tbd
+    where
+        tba.s_pt_id=tbb.s_pt_id
+        and   tba.s_syscommandoid=tbd.id
+        and tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1
+        <if test="city != null and city != ''" >
+        and  tba.s_qx= #{city}
+    </if>
+
+</select>
+    <select id="getFree" resultType="com.wavenet.maintenance.web.vo.TZaiqingTpQueryVo">
+
+        select  tba.s_pt_id,tba.s_pz,tba.s_pt_contacts,tba.s_pt_contactphone,tbd.dwmc,tba.s_pt_flow,case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd
+        where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tbb.N_RW_STATE=0 and tbb.N_DM_STATE=0
+        <if test="city != null and city != ''" >
+            and  tba.s_qx= #{city}
+        </if>s
+
+    </select>
+
+    <select id="selectyId" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVo">
+        select * from T_ZAIQING_INFO where s_id=#{sId}
+    </select>
+    <select id="getTuJiSum" resultType="java.lang.Integer">
+        select count(1) from syscommando tba,
+        syscommandos tbb,t_pumptruck tbc
+        where tba.ID=tbb.syscommandoid and tba.ID=tbc.s_syscommandoid
+        and tbc.s_pt_id=#{ sPtId}
+    </select>
+
+    <select id="getTzziInfo" resultType="com.wavenet.maintenance.web.vo.TzaiInfoVo">
+        select s_pt_id,s_pt_flow ,s_pt_contacts,s_pt_contactphone  from t_pumptruck  where s_pz=#{spz}
+    </select>
+
+    <select id="getAllInfoS" resultType="com.wavenet.maintenance.web.vo.PumptruckAllInfoVo">
+        select * from (
+
+        select table1.*,table2.FULLPATH  from (  select tba.s_pt_id,tba.s_syscommandoid,tba.s_pt_name,tbd.dwmc,tba.s_qx,tba.s_pz,tba.s_pt_flow,tba.s_pt_lift,tba.s_add,tba.s_pt_contacts,tba.s_pt_contactphone,
+        tba.n_pt_class,tba.s_pt_area,tba.s_bz,tba.s_sp,tba.s_spbh,tba.s_x,tba.s_y,tba.s_zdbz,tbb.n_dm_state,tbb.n_rw_state,tbb.n_p_x,tbb.n_p_y,tbb.n_gps,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE, case when  S_SPBH is null then '否' when S_SPBH like '%2112%' then '否' else '是' end  video
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd     where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tba.s_pt_id not in (select s_pt_id from t_dispatch  g  where g.s_zaiqing_id=#{sId}and N_STATE!=4 )
+        )
+        table1 left join   (select * from (
+        select  WBID,PATH as FULLpath,
+        row_number() OVER(PARTITION BY WBID ORDER BY ID desc) as row_flg
+        from T_FileUploader t where sourcetype=4 ) where row_flg=1) table2 on table1.S_PT_ID=table2.WBID )
+        WHERE  1=1
+
+
+        <if test="city != null and city != ''" >
+            and s_qx= #{city}
+        </if>
+        <if test="puckType != null and puckType != ''" >
+            and  N_PT_CLASS= #{puckType}
+        </if>
+        <if test="sType != null and sType != ''" >
+            and S_PT_ID  in (
+            select  S_PT_ID   from(  select S_PT_ID
+            from t_pumptruck_zaiqing where
+        </if>
+
+        <if test='sType=="N_DTCZ"'>
+            N_DTCZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XLj"'>
+            N_XLj &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DL"'>
+            N_DL &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XQ"'>
+            N_XQ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DXCK"'>
+            N_DXCK &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DDSD"'>
+            N_DDSD &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_PSXTQS"'>
+            N_PSXTQS &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_BZPSDLBZ"'>
+            N_BZPSDLBZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        and 100 &gt;rownum
+    </select>
+
+    <select id="getAggregationS" resultType="com.wavenet.maintenance.web.vo.PumptruckAllInfoVo">
+
+        select * from (
+
+        select table1.*,table2.FULLPATH  from (  select tba.s_pt_id,tba.s_syscommandoid,tba.s_pt_name,tbd.dwmc,tba.s_qx,tba.s_pz,tba.s_pt_flow,tba.s_pt_lift,tba.s_add,tba.s_pt_contacts,tba.s_pt_contactphone,
+        tba.n_pt_class,tba.s_pt_area,tba.s_bz,tba.s_sp,tba.s_spbh,tba.s_x,tba.s_y,tba.s_zdbz,tbb.n_dm_state,tbb.n_rw_state,tbb.n_p_x,tbb.n_p_y,tbb.n_gps,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE, case when  S_SPBH is null then '否' when S_SPBH like '%2112%' then '否' else '是' end  video
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd     where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tba.s_pt_id not in (select s_pt_id from t_dispatch  g  where g.s_zaiqing_id=#{sId}and N_STATE!=4 )
+        and  tbb.N_RW_STATE=1 and   tbb.N_DM_STATE=1 and tba.S_ZDBZ='否') table1 left join   (select * from (
+        select  WBID,PATH as FULLpath,
+        row_number() OVER(PARTITION BY WBID ORDER BY ID desc) as row_flg
+        from T_FileUploader t where sourcetype=4 ) where row_flg=1) table2 on table1.S_PT_ID=table2.WBID )
+        WHERE  1=1
+        <if test="city != null and city != ''" >
+            and s_qx= #{city}
+        </if>
+        <if test="puckType != null and puckType != ''" >
+            and  N_PT_CLASS= #{puckType}
+        </if>
+        <if test="sType != null and sType != ''" >
+            and S_PT_ID  in (
+            select  S_PT_ID   from(  select S_PT_ID
+            from t_pumptruck_zaiqing where
+        </if>
+        <if test='sType=="N_DTCZ"'>
+            N_DTCZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XLj"'>
+            N_XLj &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DL"'>
+            N_DL &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XQ"'>
+            N_XQ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DXCK"'>
+            N_DXCK &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DDSD"'>
+            N_DDSD &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_PSXTQS"'>
+            N_PSXTQS &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_BZPSDLBZ"'>
+            N_BZPSDLBZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        and 100 &gt;rownum
+
+    </select>
+
+    <select id="getGuaranteeS" resultType="com.wavenet.maintenance.web.vo.PumptruckAllInfoVo">
+        select * from (
+
+        select table1.*,table2.FULLPATH  from (  select tba.s_pt_id,tba.s_syscommandoid,tba.s_pt_name,tbd.dwmc,tba.s_qx,tba.s_pz,tba.s_pt_flow,tba.s_pt_lift,tba.s_add,tba.s_pt_contacts,tba.s_pt_contactphone,
+        tba.n_pt_class,tba.s_pt_area,tba.s_bz,tba.s_sp,tba.s_spbh,tba.s_x,tba.s_y,tba.s_zdbz,tbb.n_dm_state,tbb.n_rw_state,tbb.n_p_x,tbb.n_p_y,tbb.n_gps,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE, case when  S_SPBH is null then '否' when S_SPBH like '%2112%' then '否' else '是' end  video
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd     where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tba.s_pt_id not in (select s_pt_id from t_dispatch  g  where g.s_zaiqing_id=#{sId}and N_STATE!=4 )
+        and tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'   )
+        table1 left join   (select * from (
+        select  WBID,PATH as FULLpath,
+        row_number() OVER(PARTITION BY WBID ORDER BY ID desc) as row_flg
+        from T_FileUploader t where sourcetype=4 ) where row_flg=1) table2 on table1.S_PT_ID=table2.WBID )
+        WHERE  1=1
+
+
+        <if test="city != null and city != ''" >
+            and s_qx= #{city}
+        </if>
+        <if test="puckType != null and puckType != ''" >
+            and  N_PT_CLASS= #{puckType}
+        </if>
+        <if test="sType != null and sType != ''" >
+            and S_PT_ID  in (
+            select  S_PT_ID   from(  select S_PT_ID
+            from t_pumptruck_zaiqing where
+        </if>
+
+        <if test='sType=="N_DTCZ"'>
+            N_DTCZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XLj"'>
+            N_XLj &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DL"'>
+            N_DL &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XQ"'>
+            N_XQ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DXCK"'>
+            N_DXCK &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DDSD"'>
+            N_DDSD &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_PSXTQS"'>
+            N_PSXTQS &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_BZPSDLBZ"'>
+            N_BZPSDLBZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        and 100 &gt;rownum
+
+    </select>
+<!--    id=3-->
+    <select id="getImplementS" resultType="com.wavenet.maintenance.web.vo.PumptruckAllInfoVo">
+        select * from (
+
+        select table1.*,table2.FULLPATH  from (  select tba.s_pt_id,tba.s_syscommandoid,tba.s_pt_name,tbd.dwmc,tba.s_qx,tba.s_pz,tba.s_pt_flow,tba.s_pt_lift,tba.s_add,tba.s_pt_contacts,tba.s_pt_contactphone,
+        tba.n_pt_class,tba.s_pt_area,tba.s_bz,tba.s_sp,tba.s_spbh,tba.s_x,tba.s_y,tba.s_zdbz,tbb.n_dm_state,tbb.n_rw_state,tbb.n_p_x,tbb.n_p_y,tbb.n_gps,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE, case when  S_SPBH is null then '否' when S_SPBH like '%2112%' then '否' else '是' end  video
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd     where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tba.s_pt_id not in (select s_pt_id from t_dispatch  g  where g.s_zaiqing_id=#{sId}and N_STATE!=4 )
+        and  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1 )
+        table1 left join   (select * from (
+        select  WBID,PATH as FULLpath,
+        row_number() OVER(PARTITION BY WBID ORDER BY ID desc) as row_flg
+        from T_FileUploader t where sourcetype=4 ) where row_flg=1) table2 on table1.S_PT_ID=table2.WBID )
+        WHERE  1=1
+
+
+        <if test="city != null and city != ''" >
+            and s_qx= #{city}
+        </if>
+        <if test="puckType != null and puckType != ''" >
+            and  N_PT_CLASS= #{puckType}
+        </if>
+        <if test="sType != null and sType != ''" >
+            and S_PT_ID  in (
+            select  S_PT_ID   from(  select S_PT_ID
+            from t_pumptruck_zaiqing where
+        </if>
+
+        <if test='sType=="N_DTCZ"'>
+            N_DTCZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XLj"'>
+            N_XLj &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DL"'>
+            N_DL &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XQ"'>
+            N_XQ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DXCK"'>
+            N_DXCK &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DDSD"'>
+            N_DDSD &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_PSXTQS"'>
+            N_PSXTQS &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_BZPSDLBZ"'>
+            N_BZPSDLBZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        and 100 &gt;rownum
+
+    </select>
+
+
+    <select id="getFreeS" resultType="com.wavenet.maintenance.web.vo.PumptruckAllInfoVo">
+        select * from (
+
+        select table1.*,table2.FULLPATH  from (  select tba.s_pt_id,tba.s_syscommandoid,tba.s_pt_name,tbd.dwmc,tba.s_qx,tba.s_pz,tba.s_pt_flow,tba.s_pt_lift,tba.s_add,tba.s_pt_contacts,tba.s_pt_contactphone,
+        tba.n_pt_class,tba.s_pt_area,tba.s_bz,tba.s_sp,tba.s_spbh,tba.s_x,tba.s_y,tba.s_zdbz,tbb.n_dm_state,tbb.n_rw_state,tbb.n_p_x,tbb.n_p_y,tbb.n_gps,
+        case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then '任务执行'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then '驻点保障'
+        else  '集结待命'  end  PUMPSTATE, case when  S_SPBH is null then '否' when S_SPBH like '%2112%' then '否' else '是' end  video
+        from  t_pumptruck tba,
+        t_pumptruck_control tbb,syscommando tbd     where tba.s_pt_id=tbb.s_pt_id  and   tba.s_syscommandoid=tbd.id
+        and tba.s_pt_id not in (select s_pt_id from t_dispatch  g  where g.s_zaiqing_id=#{sId}and N_STATE!=4 )
+        and tbb.N_RW_STATE=0 and tbb.N_DM_STATE=0 )
+        table1 left join   (select * from (
+        select  WBID,PATH as FULLpath,
+        row_number() OVER(PARTITION BY WBID ORDER BY ID desc) as row_flg
+        from T_FileUploader t where sourcetype=4 ) where row_flg=1) table2 on table1.S_PT_ID=table2.WBID )
+        WHERE  1=1
+
+
+        <if test="city != null and city != ''" >
+            and s_qx= #{city}
+        </if>
+        <if test="puckType != null and puckType != ''" >
+            and  N_PT_CLASS= #{puckType}
+        </if>
+        <if test="sType != null and sType != ''" >
+            and S_PT_ID  in (
+            select  S_PT_ID   from(  select S_PT_ID
+            from t_pumptruck_zaiqing where
+        </if>
+
+        <if test='sType=="N_DTCZ"'>
+            N_DTCZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XLj"'>
+            N_XLj &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DL"'>
+            N_DL &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_XQ"'>
+            N_XQ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DXCK"'>
+            N_DXCK &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_DDSD"'>
+            N_DDSD &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_PSXTQS"'>
+            N_PSXTQS &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        <if test='sType=="N_BZPSDLBZ"'>
+            N_BZPSDLBZ &gt; 0  order by  #{sType} ASC）tbc    )
+        </if>
+        and 100 &gt;rownum
+
+    </select>
+    <select id="selectEarlyInfo" resultType="com.wavenet.maintenance.web.vo.VYjxxQueryVo">
+
+        select *  from v_yjxx  where dt_relievetime is null or dt_relievetime &gt; sysdate-8/24
+
+    </select>
+
+    <select id="getZaiInfo" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoS">
+
+        select tba.*,	tbc.S_CD_VALUE,case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE
+        from t_zaiqing_info tba ,(select * from t_dictianory where   S_TYPE='灾情类别') tbc
+        where 1=1
+        and ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and tba.S_type=tbc.S_CD_KEY
+        and tba.n_cancel=0
+        and   tba.S_ID NOT IN ( select S_ZAIQING_ID from t_dispatch where s_pt_id=#{id})
+        <if test="city != null and city != ''" >
+            and  S_DEPTID= #{city}
+        </if>
+        <if test="danger != null and danger != ''" >
+          and  N_SOURCE=( select S_CD_KEY from t_dictianory where s_type='灾情来源' and S_CD_VALUE=#{danger})
+        </if>
+        <if test="startTime != null and startTime != ''" >
+            and to_char(t_publish_time,'yyyy-mm-dd hh24:mi:ss')   &gt; #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''" >
+            and to_char(t_publish_time,'yyyy-mm-dd hh24:mi:ss')  &lt; #{endTime}
+        </if>
+        <if test="startLength != null">
+           and  N_VALUE  &gt; #{startLength}
+        </if>
+        <if test="endLength != null">
+            and N_VALUE &lt; #{endLength}
+        </if>
+    </select>
+    <select id="disasterCome" resultType="java.lang.String">
+
+        SELECT S_CD_VALUE FROM "T_DICTIANORY" WHERE S_TYPE='灾情来源'
+
+    </select>
+    <select id="selectBySearch" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCon">
+
+        select tba.* from t_zaiqing_info TBA
+        where
+           N_CANCEL=0  and N_PAIDAN=0
+        <if test="crux != null and crux != ''" >
+            and  tba.s_name LIKE '%'||#{crux}||'%'
+        </if>
+        and ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )  and tba.T_PUBLISH_TIME&lt;sysdate
+
+    </select>
+
+
+
+    <select id="getDispatch" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+
+        select  tba.*,tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA ,(select * from t_dictianory where   S_TYPE='灾情类别') tbc
+        where     tba.n_cancel=0 and tba.n_paidan=0
+        and ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and    ( tba.S_PUBLISHER='psc'  or tba.S_PUBLISHER is null or tba.n_zhiyuan=1)
+        and tba.S_type=tbc.S_CD_KEY
+        
+    </select>
+    <select id="getDispatchDo" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+
+        select tba.*, tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA,t_dispatch TBB ,(select * from t_dictianory where   S_TYPE='灾情类别' ) tbc
+        where  ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and tba.S_type=tbc.S_CD_KEY    and    ( tba.S_PUBLISHER='psc'  or tba.S_PUBLISHER is null or tba.n_zhiyuan=1)
+        AND TBA.S_ID=TBB.S_ZAIQING_ID  AND  ( TBB.N_STATE&lt;4  and TBA.N_CANCEL!=1)
+    </select>
+    <select id="getDispatchClose" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+
+        select
+        tba.*,
+        tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA,(select * from t_dictianory where   S_TYPE='灾情类别' ) tbc
+        where     ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and tba.S_type=tbc.S_CD_KEY    AND  ( TBA.N_CANCEL=1 or   TBA.S_ID  in (select  S_ZAIQING_ID from  t_dispatch  where ((T_STIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24)or T_STIME&gt;sysdate-8/24 )
+        and T_STIME&lt;sysdate    group by S_ZAIQING_ID    having  min(N_STATE)=4   )  )
+        AND         ( tba.S_PUBLISHER='psc' or tba.S_PUBLISHER is null or tba.n_zhiyuan=1)
+
+    </select>
+    <select id="getDispatchs" resultType="com.wavenet.maintenance.web.vo.SwrnQueryVo">
+        select NVL(RWZX,0)RWZX, NVL(RWWC,0)RWWC
+        from (
+        select N_STATE,COUNT(1) CON  from t_dispatch TBA
+        where 1=1 and tba.T_STIME &gt;(( select case when  dt_relievetime is null then  dT_PUBLISHTIME else dt_relievetime end   T_PUBLISHTIME  from v_yjxx  ))
+        and tba.T_STIME &lt; sysdate
+        and tba.S_AREA like '%市%'
+        and TBA.N_STATE IN (3,4) GROUP BY N_STATE )  tbc
+        PIVOT(max(con) for n_state in ('3' as RWZX,'4' AS RWWC)) c
+
+
+    </select>
+    <select id="getCountByCar" resultType="com.wavenet.maintenance.web.vo.CountByCarVo">
+
+        select   S_QX,NVL(RWZX,0) RWZX,NVL(ZDBZ,0) ZDBZ, NVL(JJDM,0) JJDM
+        from ( select  S_QX,PUMPSTATE,count(1)con
+        from (  select S_QX,case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then 'RWZX'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then 'ZDBZ'
+        else  'JJDM'  end  PUMPSTATE  from  t_pumptruck tba,t_pumptruck_control tbb
+        where tba.s_pt_id=tbb.s_pt_id  and  S_QX like '%区%' ) tbc  group by PUMPSTATE,S_QX)
+        pivot(max(con) for PUMPSTATE in ('RWZX' as RWZX,'ZDBZ' as ZDBZ,'JJDM' as JJDM) )  c
+    </select>
+    <select id="getCarStateInfoCity" resultType="com.wavenet.maintenance.web.vo.CountByCarVoS">
+        select   NVL(RWZX,0)RWZX, NVL(ZDBZ,0)ZDBZ, NVL(JJDM,0)JJDM
+        from (
+        select  PUMPSTATE,count(1)con from
+        ( select case when  tbb.N_RW_STATE=2 and tbb.N_DM_STATE=1  then 'RWZX'    when  tbb.N_RW_STATE=1 and tbb.N_DM_STATE=1 and tba.S_ZDBZ='是'  then 'ZDBZ' else  'JJDM'  end  PUMPSTATE  from  t_pumptruck tba,t_pumptruck_control tbb
+        where tba.s_pt_id=tbb.s_pt_id  and  S_QX like '%市排水%' ) tbc  group by PUMPSTATE)
+        pivot(max(con) for PUMPSTATE in ('RWZX' as RWZX,'ZDBZ' as ZDBZ,'JJDM' as JJDM) )  c
+    </select>
+<!--    //泵车派单 getCarRescue 执行 getCarRescueDo 完成 getDispatchcomplete-->
+<!--    //市级派单  getDispatch 执行 getDispatchDo 完成 getDispatchClose-->
+<!--    //市级派单  getDispatcByCity 执行 getDispatchDoByCity 完成 getDispatchCloseByCity-->
+
+    <select id="getDispatcByCity" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+
+        select  tba.*,tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA ,(select * from t_dictianory where   S_TYPE='灾情类别') tbc
+        where     tba.n_cancel=0 and tba.n_paidan=0
+        and  ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+          <if test="city != null and city != ''" >
+        and  S_DEPTID= #{city}
+        </if>
+        and    ( tba.S_PUBLISHER!='psc' and tba.n_zhiyuan!=1)
+        and tba.S_type=tbc.S_CD_KEY
+
+
+    </select>
+    <select id="getDispatchDoByCity" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+
+        select tba.*, tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA,t_dispatch TBB ,(select * from t_dictianory where   S_TYPE='灾情类别' ) tbc
+        where  ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+          <if test="city != null and city != ''" >
+         and  S_DEPTID= #{city}
+        </if>
+        and    ( tba.S_PUBLISHER!='psc' and tba.n_zhiyuan!=1)
+        and tba.S_type=tbc.S_CD_KEY
+        AND TBA.S_ID=TBB.S_ZAIQING_ID  AND  ( TBB.N_STATE&lt;4  and TBA.N_CANCEL!=1)
+    </select>
+    <select id="getDispatchCloseByCity" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+
+        select
+        tba.*,
+        tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA,(select * from t_dictianory where   S_TYPE='灾情类别' ) tbc
+        where     ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and tba.S_type=tbc.S_CD_KEY    AND  ( TBA.N_CANCEL=1 or   TBA.S_ID  in (select  S_ZAIQING_ID from  t_dispatch  where  ((T_STIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24)or T_STIME&gt;sysdate-8/24 )
+        and T_STIME&lt;sysdate    group by S_ZAIQING_ID    having  min(N_STATE)=4   )  )
+        and    ( tba.S_PUBLISHER!='psc' and tba.n_zhiyuan!=1)
+         <if test="city != null and city != ''" >
+         and  S_DEPTID= #{city}
+        </if>
+
+    </select>
+    <select id="getCarRescue" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+        select  tba.*,tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA ,(select * from t_dictianory where   S_TYPE='灾情类别') tbc
+        where     tba.n_cancel=0 and tba.n_paidan=0
+        and  ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and tba.S_type=tbc.S_CD_KEY
+
+
+
+    </select>
+    <select id="getCarRescueDo" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+        select tba.*, tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA,t_dispatch TBB ,(select * from t_dictianory where   S_TYPE='灾情类别' ) tbc
+        where    ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+        and tba.S_type=tbc.S_CD_KEY
+        AND TBA.S_ID=TBB.S_ZAIQING_ID  AND  ( TBB.N_STATE&lt;4  and TBA.N_CANCEL!=1)
+
+
+
+    </select>
+    <select id="getDispatchcomplete" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCdValue">
+        select  tba.*,
+        tbc.S_CD_VALUE , case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE from t_zaiqing_info TBA,(select * from t_dictianory where   S_TYPE='灾情类别' ) tbc
+        where      ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+        and tba.T_PUBLISH_TIME&lt;sysdate
+            and tba.S_type=tbc.S_CD_KEY    AND  ( TBA.N_CANCEL=1 or   TBA.S_ID
+        in (select  S_ZAIQING_ID from  t_dispatch  where    ((T_STIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24)or T_STIME&gt;sysdate-8/24 )
+        and T_STIME&lt;sysdate    group by S_ZAIQING_ID    having  min(N_STATE)=4   )  )
+    </select>
+    <select id="getVideoById" resultType="java.lang.String">
+        select fullpath from t_video_info where   s_pt_id=#{id}
+
+    </select>
+    <select id="disasterCategory" resultType="java.lang.String">
+        SELECT S_CD_VALUE FROM "T_DICTIANORY" WHERE S_TYPE='灾情类别' ORDER BY S_CD_KEY
+
+    </select>
+    <select id="selectByDisaster" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCon">
+
+        select tba.* from t_zaiqing_info TBA
+        where
+        N_CANCEL=0  and N_PAIDAN=0
+        and ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  ) and tba.T_PUBLISH_TIME&lt;sysdate
+
+
+    </select>
+    <select id="selectByDisasterCity" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCon">
+        select tba.* from t_zaiqing_info TBA
+        where
+        N_CANCEL=0  and N_PAIDAN=0
+        and S_DEPTID like '%市%'
+        and ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  ) and tba.T_PUBLISH_TIME&lt;sysdate
+    </select>
+    <select id="selectByDisasterArea" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoCon">
+
+        select tba.* from t_zaiqing_info TBA
+        where
+        N_CANCEL=0  and N_PAIDAN=0
+        <if test="city != null and city != ''" >
+            and S_DEPTID like #{city}
+        </if>
+
+        and  ((tba.T_PUBLISH_TIME&gt;(select dT_PUBLISHTIME from v_yjxx) and (select nvl(dt_relievetime,sysdate) from v_yjxx)&gt;sysdate-8/24) or tba.T_PUBLISH_TIME&gt;sysdate-8/24  )
+
+
+
+
+    </select>
+    <select id="Carposition" resultType="com.wavenet.maintenance.web.vo.TPumptruckControlQueryVo">
+        SELECT * FROM T_PUMPTRUCK_CONTROL WHERE S_PT_ID in
+        (SELECT S_PT_ID FROM T_DISPATCH WHERE S_ZAIQING_ID=#{id})
+
+
+    </select>
+
+
+
+</mapper>

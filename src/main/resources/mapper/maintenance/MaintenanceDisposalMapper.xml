@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.MaintenanceDisposalMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        MAINTENANCE_DISPOSAL.disposal_code, MAINTENANCE_DISPOSAL.detail_code,
+        MAINTENANCE_DISPOSAL.road_code, MAINTENANCE_DISPOSAL.road_name,
+        MAINTENANCE_DISPOSAL.road_section_code, MAINTENANCE_DISPOSAL.road_section_start,
+        MAINTENANCE_DISPOSAL.road_section_end, MAINTENANCE_DISPOSAL.type,
+        MAINTENANCE_DISPOSAL.date_start, MAINTENANCE_DISPOSAL.date_end,
+        MAINTENANCE_DISPOSAL.person_code, MAINTENANCE_DISPOSAL.person_name,
+        MAINTENANCE_DISPOSAL.company, MAINTENANCE_DISPOSAL.town,
+        MAINTENANCE_DISPOSAL.way, MAINTENANCE_DISPOSAL.delete_state,
+        MAINTENANCE_DISPOSAL.att_before, MAINTENANCE_DISPOSAL.att_ongoing,
+        MAINTENANCE_DISPOSAL.att_after, MAINTENANCE_DISPOSAL.curing_state,
+        MAINTENANCE_DISPOSAL.curing_length
+
+    </sql>
+
+    <select id="getMaintenanceDisposalById" resultType="com.wavenet.maintenance.web.vo.MaintenanceDisposalQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from MAINTENANCE_DISPOSAL where disposal_code = #{id}
+    </select>
+
+    <select id="getMaintenanceDisposalPageList"  resultType="com.wavenet.maintenance.web.vo.MaintenanceDisposalQueryVo">
+        select
+        <include refid="Base_Column_List"/>,MAINTENANCE_DETAIL.pipe_grade,MAINTENANCE_DETAIL.pipe_total,
+        MAINTENANCE_DETAIL.Project_Team,MAINTENANCE_DETAIL.source,MAINTENANCE_DETAIL.plans,
+        MAINTENANCE_DETAIL.Enclosure
+        from MAINTENANCE_DISPOSAL
+        left join MAINTENANCE_DETAIL on MAINTENANCE_DISPOSAL.detail_code=MAINTENANCE_DETAIL.detail_code
+        where 1=1
+        <if test="param.town!=null and param.town!=''">
+           and MAINTENANCE_DISPOSAL.town=#{param.town}
+        </if>
+        <if test="param.roadName!=null and param.roadName!=''">
+            and  MAINTENANCE_DISPOSAL.road_name=#{param.roadName}
+        </if>
+        <if test="param.state!=null and param.state!=''">
+           and   MAINTENANCE_DISPOSAL.curing_state=#{param.state}
+        </if>
+        <if test="param.time!=null and param.time!=''">
+           and   CONVERT(varchar(7) ,MAINTENANCE_DISPOSAL.date_start, 120)=#{param.time}
+
+        </if>
+        <if test="param.way!=null and param.way!=''">
+            and  MAINTENANCE_DISPOSAL.way=#{param.way}
+        </if>
+        <if test="param.personCode!=null and param.personCode!=''">
+            and  MAINTENANCE_DISPOSAL.person_code=#{param.personCode}
+        </if>
+        <if test="param.company!=null and param.company!=''">
+            and  MAINTENANCE_DISPOSAL.company=#{param.company}
+        </if>
+        <if test="param.beginTime!=null and param.beginTime!=''">
+            and  MAINTENANCE_DISPOSAL.date_start >= #{param.beginTime}
+        </if>
+        <if test="param.endTime!=null and param.endTime!=''">
+            and  MAINTENANCE_DISPOSAL.date_start &lt;= #{param.endTime}
+        </if>
+        <if test="param.personName!=null and param.personName!=''">
+            and  MAINTENANCE_DISPOSAL.person_name = #{param.personName}
+        </if>
+        <if test="param.plans!=null and param.plans!=''">
+            and  MAINTENANCE_DETAIL.plans = #{param.plans}
+        </if>
+        <if test="param.projectTeam!=null and param.projectTeam!=''">
+            and  MAINTENANCE_DETAIL.project_team = #{param.projectTeam}
+        </if>
+        <if test="param.type!=null and param.type!=''">
+            and  MAINTENANCE_DISPOSAL.type = #{param.type}
+        </if>
+    </select>
+    <!--查询总长度-->
+    <select id="getLengthCount"  resultType="java.lang.Long">
+       select sum(tbc.curing_length) from  (select
+        <include refid="Base_Column_List"/>,MAINTENANCE_DETAIL.pipe_grade,MAINTENANCE_DETAIL.pipe_total,
+        MAINTENANCE_DETAIL.Project_Team,MAINTENANCE_DETAIL.source,MAINTENANCE_DETAIL.plans,
+        MAINTENANCE_DETAIL.Enclosure
+        from MAINTENANCE_DISPOSAL
+        left join MAINTENANCE_DETAIL on MAINTENANCE_DISPOSAL.detail_code=MAINTENANCE_DETAIL.detail_code) tbc
+        where 1=1
+        <if test="param.town!=null and param.town!=''">
+            and tbc.town=#{param.town}
+        </if>
+        <if test="param.roadName!=null and param.roadName!=''">
+            and  tbc.road_name=#{param.roadName}
+        </if>
+        <if test="param.state!=null and param.state!=''">
+            and   tbc.curing_state=#{param.state}
+        </if>
+        <if test="param.time!=null and param.time!=''">
+            and   CONVERT(varchar(7) ,tbc.date_start, 120)=#{param.time}
+
+        </if>
+        <if test="param.way!=null and param.way!=''">
+            and  tbc.way=#{param.way}
+        </if>
+        <if test="param.personCode!=null and param.personCode!=''">
+            and  tbc.person_code=#{param.personCode}
+        </if>
+        <if test="param.company!=null and param.company!=''">
+            and  tbc.company=#{param.company}
+        </if>
+        <if test="param.beginTime!=null and param.beginTime!=''">
+            and  tbc.date_start >= #{param.beginTime}
+        </if>
+        <if test="param.endTime!=null and param.endTime!=''">
+            and  tbc.date_start &lt;= #{param.endTime}
+        </if>
+        <if test="param.personName!=null and param.personName!=''">
+            and  tbc.person_name = #{param.personName}
+        </if>
+        <if test="param.plans!=null and param.plans!=''">
+            and  tbc.plans = #{param.plans}
+        </if>
+        <if test="param.projectTeam!=null and param.projectTeam!=''">
+            and  tbc.project_team = #{param.projectTeam}
+        </if>
+        <if test="param.type!=null and param.type!=''">
+            and  tbc.type = #{param.type}
+        </if>
+    </select>
+
+</mapper>

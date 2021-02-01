@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.EventDisposalMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        disposal_code, dispatch_code, solver_code, solver_name, town, company, solve_start, solve_end, solve_desc, att_before, att_ongoing, att_after
+        ,road_code,road_name,road_section_code,road_section_start,road_section_end
+    </sql>
+
+    <select id="getEventDisposalById" resultType="com.wavenet.maintenance.web.vo.EventDisposalQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPOSAL where DISPOSAL_CODE = #{id}
+    </select>
+
+    <select id="getEventDisposalPageList" resultType="com.wavenet.maintenance.web.vo.EventDisposalQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPOSAL
+    </select>
+
+</mapper>

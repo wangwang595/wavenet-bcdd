@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.EventDispatchRelMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        event_dispatch_code, event_code, dispatch_code
+    </sql>
+
+    <select id="getEventDispatchRelById" resultType="com.wavenet.maintenance.web.vo.EventDispatchRelQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPATCH_REL where EVENT_DISPATCH_CODE = #{id}
+    </select>
+
+    <select id="getEventDispatchRelPageList" resultType="com.wavenet.maintenance.web.vo.EventDispatchRelQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from EVENT_DISPATCH_REL
+    </select>
+
+</mapper>

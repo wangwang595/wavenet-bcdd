@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wavenet.maintenance.dao.mapper.TDispatchMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_ZAIQING_ID, N_EMERGENT, T_TIME, N_STATE, S_DESCRIBE, S_TYPE, S_ADDRESS, S_CITY, S_AREA, S_VILLAGE, N_X, N_Y, T_STIME, S_AREANAME, S_PERNAME, S_CONTACTS, S_CONTACTPHONE, S_CHARGE, S_CHARGEPHONE, T_START_TIME, T_END_TIME, N_SHICHANG, S_PT_ID, N_RENSHU, N_RESULT, S_REALIZER, S_REALIZERPHONE, S_BZ, N_ISREPORT, T_UPDATETIME, N_PSL, S_REFUSE, S_BREAK, S_NAME, N_PB_X, N_PB_Y
+    </sql>
+
+    <select id="getTDispatchById" resultType="com.wavenet.maintenance.web.vo.TDispatchQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_DISPATCH where id = #{id}
+    </select>
+
+    <select id="getTDispatchPageList" resultType="com.wavenet.maintenance.web.vo.TDispatchQueryVo">
+        select
+        <include refid="Base_Column_List"/>
+        from T_DISPATCH
+    </select>
+
+    <select id="tDispatchInfo" resultType="com.wavenet.maintenance.web.vo.TZaiqingInfoQueryVoS">
+        select tba.*,tbc.S_CD_VALUE, case when tba.n_cancel=1 then '已关闭险情'
+        when   tba.n_cancel=0 and tba.n_paidan=1 then '已派单险情'
+        when   tba.n_cancel=0 and tba.n_paidan=0 then '未派单险情'  else  '其他' end XQSTATE
+        from T_ZAIQING_INFO  tba,( select case when  dt_relievetime is null then  dT_PUBLISHTIME else dt_relievetime end   T_PUBLISHTIME  from v_yjxx  ) tbb
+        ,(select * from t_dictianory where   S_TYPE='灾情类别') tbc
+        where ((N_CANCEL=1  and N_PAIDAN=1) or N_CANCEL=0 )
+        and tba.T_PUBLISH_TIME &gt;tbb.t_publishtime
+        and tba.T_PUBLISH_TIME &lt; sysdate
+        and tba.S_type=tbc.S_CD_KEY
+        <if test="id != null and id != ''" >
+            and tba.S_ID=#{id}
+        </if>
+
+
+    </select>
+    <select id="getRenWuInfoById" resultType="com.wavenet.maintenance.web.vo.TDispatchQueryVoCdValueSpz">
+        select  tba.DWMC,tba.S_PZ,t.*,c.S_CD_VALUE  from T_DISPATCH t,
+        (select * from T_DICTIANORY where S_TYPE='灾情类别') c,
+        ( SELECT tsc.S_PT_ID, tsc.S_PZ,sy.DWMC FROM "T_PUMPTRUCK" tsc
+        ,SYSCOMMANDO  sy WHERE tsc.S_SYSCOMMANDOID= sy.ID ) tba
+        where
+        t.S_TYPE=c.S_CD_KEY
+        and
+        tba.S_PT_ID =t.S_PT_ID
+        and t.S_ZAIQING_ID=#{id}
+    </select>
+
+
+
+
+</mapper>
