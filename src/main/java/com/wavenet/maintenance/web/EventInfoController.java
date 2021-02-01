@@ -108,5 +108,8 @@ public class EventInfoController extends BaseController {
         List<EventDisposalRel> list = eventInfoService.selectDispatchCode(code);
         return ApiResult.ok(list);
     }
+    /**
+     * 删除
+     */
 }
 
